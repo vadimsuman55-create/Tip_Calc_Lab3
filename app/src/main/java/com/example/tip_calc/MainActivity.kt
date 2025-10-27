@@ -102,6 +102,19 @@ fun DemoScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
         modifier = modifier.fillMaxSize()
     ) {
+        // Подпись с объяснением расчета скидки
+        Text(
+            text = when (sale) {
+                10 -> "Более 10 блюд - скидка 10%"
+                7 -> "6-10 блюд - скидка 7%"
+                5 -> "3-5 блюд - скидка 5%"
+                3 -> "1-2 блюда - скидка 3%"
+                else -> "Нет блюд - скидка 0%"
+            },
+            fontSize = 14.sp,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+
         Text(
             text = "Калькулятор скидок и чаевых",
             fontSize = 24.sp,

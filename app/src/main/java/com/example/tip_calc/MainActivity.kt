@@ -29,6 +29,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Slider
+import androidx.compose.runtime.mutableFloatStateOf
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,9 +56,32 @@ fun DemoTextPreview() {
 }
 
 @Composable
+fun DemoSlider(sliderPosition: Float, onPositionChange: (Float) -> Unit) {
+    Column(
+        modifier = Modifier.padding(10.dp)
+    ) {
+        Text(
+            text = "Чаевые:",
+            fontSize = 22.sp,
+            modifier = Modifier.align(Alignment.Start)
+        )
+        Slider(
+            valueRange = 0f..100f,
+            value = sliderPosition,
+            onValueChange = { onPositionChange(it) }
+        )
+    }
+}
+
+@Composable
 fun DemoScreen(modifier: Modifier = Modifier) {
     var order by remember { mutableStateOf("") }
     var dishCount by remember { mutableStateOf("") }
+    var sliderPosition by remember { mutableFloatStateOf(0f) }
+
+    val handlePositionChange = { position: Float ->
+        sliderPosition = position
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,7 +94,7 @@ fun DemoScreen(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.headlineMedium
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // Сумма заказа
         Row(
@@ -89,6 +114,17 @@ fun DemoScreen(modifier: Modifier = Modifier) {
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        // Слайдер для чаевых
+        DemoSlider(
+            sliderPosition = sliderPosition,
+            onPositionChange = handlePositionChange
+        )
+
+        Text(
+            style = MaterialTheme.typography.headlineMedium,
+            text = "${sliderPosition.toInt()}%"
+        )
 
         // Количество блюд
         Row(

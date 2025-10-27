@@ -31,6 +31,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Slider
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.material3.RadioButton
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,6 +80,18 @@ fun DemoScreen(modifier: Modifier = Modifier) {
     var order by remember { mutableStateOf("") }
     var dishCount by remember { mutableStateOf("") }
     var sliderPosition by remember { mutableFloatStateOf(0f) }
+    var sale by remember { mutableIntStateOf(0) }
+
+    val calculateAutoSale = {
+        val count = dishCount.toIntOrNull() ?: 0
+        sale = when {
+            count > 10 -> 10
+            count >= 6 -> 7
+            count >= 3 -> 5
+            count >= 1 -> 3
+            else -> 0
+        }
+    }
 
     val handlePositionChange = { position: Float ->
         sliderPosition = position
@@ -96,6 +110,33 @@ fun DemoScreen(modifier: Modifier = Modifier) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Радиокнопки для отображения автоматически рассчитанной скидки
+        Text(
+            text = "Скидка:",
+            fontSize = 22.sp
+        )
+
+        val discountOptions = listOf(3, 5, 7, 10)
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            discountOptions.forEach { option ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    RadioButton(
+                        selected = sale == option,
+                        onClick = null
+                    )
+                    Text(
+                        text = "$option%",
+                        fontSize = 15.sp,
+                        modifier = Modifier.padding(start = 1.dp, end = 10.dp)
+                    )
+                }
+            }
+        }
         // Сумма заказа
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -106,10 +147,23 @@ fun DemoScreen(modifier: Modifier = Modifier) {
                 fontSize = 22.sp,
                 modifier = Modifier.width(150.dp)
             )
+            // Обновляем обработчики onChange в полях ввода:
             TextField(
                 value = order,
-                onValueChange = { order = it },
+                onValueChange = {
+                    order = it
+                    calculateAutoSale()
+                },
                 modifier = Modifier.width(190.dp)
+            )
+
+            TextField(
+                value = dishCount,
+                onValueChange = {
+                    dishCount = it
+                    calculateAutoSale()
+                },
+                modifier = Modifier.width(150.dp)
             )
         }
 
